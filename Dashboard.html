@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html>
+    <head>
+      <meta charset="UTF-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+      <title>Remote Health Monitoring System</title>
+      <!-- Font Awesome CDN -->
+      <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+      <!-- CSS style -->
+      <link rel="stylesheet" href="styles.css">
+    </head>
+
+    <body>
+
+<div class="dashboard-container">
+      
+<div id="sidebar" class="sidebar">
+      <!-- Side-bar Header -->
+ <div class="sidebar-header">
+  <h1>My Health Monitor</h1>
+    <div class="user-profile">
+        <img id="profileImage" src="default-profile.jpg" alt="Profile Image" />
+        
+        <p><strong>Name:</strong> <span id="firstName"></span> <span id="lastName"></span></p>
+    </div>
+    </div>
+      <nav class="sidebar-nav">
+  <ul>
+    <li><a href="Dashboard.html" class="nav-link"><i class="fa-solid fa-house"></i> <span>Dashboard</a></li></span>
+    <li><a href="Support.html" class="nav-link"><i class="fa-solid fa-circle-question"></i> <span>Support</span></a></li>
+  </ul>
+  <ul>
+    <button id="logoutBtn">Logout</button>
+    <i class="fa fa-sign-out-alt"></i> <span>Logout</span>
+  </ul>
+      </nav>
+    </div>
+
+<!-- Main Content -->
+<div id="dashboard" class="dashboard">
+   <div class="main-content">
+    <header class="welcome-title">
+    <h1>
+      <p><span id="firstName"></span>Dashboard</p>
+    </h1>
+    <h2>Welcome to Your Dashboard!</h2>
+    </header>
+
+    <!-- Health Metrics section -->
+     <div class="main-page">         
+      <div class="metrics-section">
+        <div class="metric-card">
+          <i class="fas fa-heartbeat" style="color: red;"></i>
+          <span id="heartRate">Loading...</span>
+          <p>Heart Rate (BPM)</p>
+        </div>
+        
+        <div class="metric-card">
+          <i class="fas fa-thermometer-half" style="color: rgb(9, 157, 123)"></i>
+          <span id="objectTemp">Loading...</span>
+          <p>Object Temperature</p>
+        </div>
+        <div class="metric-card">
+          <i class="fas fa-thermometer-half" style="color: rgb(9, 157, 123)"></i>
+          <span id="ambientTemp">Loading...</span>
+          <p>Ambient Temperature</p>
+        </div>
+      </div>
+      <div id="realTimeAlerts" class="real-time-alerts">
+        <h2>RECENT ALERTS</h2>
+        <ul id="alertList" class="alert-list">
+            <li id="heartRateAlert" class="alert-item">Waiting for data...</li>
+        </ul>
+    </div>
+
+<!-- Report Section (Footer) -->
+<div class="report-section">
+    <footer class="dashboard-footer">
+      <p>&copy; 2025 Health Monitor All Rights Reserved.</p>
+      <a href="#">Privacy Policy</a>
+      <button id="downloadReport">Download Health Report</button>
+    </footer>
+</div>
+</div>
+
+<!-- Firebase and PDF Generation Scripts -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+  import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+  import { getDatabase, ref, onValue } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-database.js";
+
+  const firebaseConfig = {
+      apiKey: "AIzaSyDWbVeFC7JK5jiEZq-y3oCDdaZHvmmudSk",
+      authDomain: "village-app-af79c.firebaseapp.com",
+      databaseURL: "https://village-app-af79c-default-rtdb.firebaseio.com",
+      projectId: "village-app-af79c",
+      storageBucket: "village-app-af79c.appspot.com",
+      messagingSenderId: "875981152858",
+      appId: "1:875981152858:web:34559ed3b8147d5e1e2e63"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const database = getDatabase(app);
+
+  document.getElementById("logoutBtn").addEventListener("click", () => {
+      signOut(auth).then(() => {
+          alert('You have been logged out successfully.');
+          window.location.href = 'Sign in.html';
+      }).catch(error => {
+          console.error('Sign-out error:', error);
+          alert('Failed to log out. Please try again.');
+      });
+  });
+
+// Function to fetch user data and display it
+function fetchUserData() {
+    const userDataRef = ref(database, 'users/10mdYbdzmFRCvHTARlPyAVJHVlG3/profile');
+
+    onValue(userDataRef, (snapshot) => {
+        const data = snapshot.val();
+
+        if (data) {
+            console.log("Fetched User Data:", data); // Debugging
+            document.getElementById("firstName").textContent = data.firstName || "No First Name";
+            document.getElementById("lastName").textContent = data.lastName || "No Last Name";
+            document.getElementById("email").textContent = data.email || "No Email";
+
+            // Generate and display profile image or avatar
+            if (data.profilePicture) {
+                // If profile picture exists, set it
+                document.getElementById("profileImage").src = data.profilePicture;
+            } else {
+                // Otherwise, generate the profile image dynamically
+                generateProfileImage(data.firstName, data.lastName);
+            }
+        } else {
+            console.error("User profile data not found!");
+            // Generate dynamic profile image if no data found
+            generateProfileImage("Default", "User");
+        }
+    });
+}
+
+// Function to generate a profile image using initials if no profile picture exists
+function generateProfileImage(firstName, lastName) {
+    const initials = (firstName.charAt(0) + lastName.charAt(0)).toUpperCase(); // Get initials
+    const profileImage = document.getElementById("profileImage");
+
+    // Create a canvas to dynamically generate the avatar
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
+
+    // Set canvas size
+    canvas.width = 100;
+    canvas.height = 100;
+
+    // Set background color (light gray)
+    ctx.fillStyle = "#ddd";
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    // Set text style (white, bold, and centered)
+    ctx.fillStyle = "#fff";
+    ctx.font = "50px Arial";
+    ctx.textAlign = "center";
+    ctx.textBaseline = "middle";
+
+    // Draw initials in the center of the canvas
+    ctx.fillText(initials, canvas.width / 2, canvas.height / 2);
+
+    // Convert canvas to image URL and set it as the src of the profile image
+    profileImage.src = canvas.toDataURL();
+}
+
+// Call function after DOM is loaded
+document.addEventListener("DOMContentLoaded", () => {
+    fetchUserData();
+});
+
+
+  function fetchSensorData() {
+    const userDataRef = ref(database, 'users/-OH-7gvvcOoT4NufhvWO');
+
+    onValue(userDataRef, (snapshot) => {
+        const data = snapshot.val();
+        if (data) {
+            document.getElementById("objectTemp").textContent = `${data.latestReading.objectTemperature}°C`;
+            document.getElementById("ambientTemp").textContent = `${data.latestReading.ambientTemperature}°C`;
+            document.getElementById("ecgVoltage").textContent = `${data.latestReading.heartRate} Bpm`;
+        }
+    });
+}
+
+async function fetchReadings() {
+  const response = await fetch("https://village-app-af79c-default-rtdb.firebaseio.com/users/-OH-7gvvcOoT4NufhvWO/latestReading.json");
+  
+  if (!response.ok) {
+      console.error("Failed to fetch readings");
+      return;
+  }
+
+    const data = await response.json();
+
+    if (data) {
+        const heartRateElement = document.getElementById("heartRate");
+        heartRateElement.textContent = `${data.heartRate} bpm`;
+    
+        let alertsContainer = document.getElementById("realTimeAlerts");
+        let alertMessage = "";
+        let newAlertType = "";
+        
+        // Store last alert type outside this function if needed
+        if (typeof window.lastAlertType === "undefined") {
+            window.lastAlertType = "";
+        }
+    
+        // Determine alert type
+        if (data.heartRate >= 60 && data.heartRate <= 100) {
+            // ✅ Normal Range - Green
+            heartRateElement.style.color = "white";
+            heartRateElement.style.backgroundColor = "green";
+            heartRateElement.textContent = `${data.heartRate} BPM - Normal`;
+            newAlertType = "success"; // Changed "Congrats" to "success" for better Bootstrap compatibility
+            alertMessage = "Heart rate is normal.";
+    
+        } else if ((data.heartRate >= 50 && data.heartRate <= 59) || (data.heartRate >= 101 && data.heartRate <= 110)) {
+            // ⚠️ Warning - Yellow
+            heartRateElement.style.color = "black";
+            heartRateElement.style.backgroundColor = "yellow";
+            heartRateElement.textContent = `${data.heartRate} BPM - Caution: Monitor closely!`;
+            newAlertType = "warning";
+            alertMessage = "Warning: Heart rate slightly abnormal.";
+    
+        } else if (data.heartRate < 40 || data.heartRate > 110) {
+            // 🚨 Critical - Red
+            heartRateElement.style.color = "white";
+            heartRateElement.style.backgroundColor = "red";
+            heartRateElement.textContent = `${data.heartRate} BPM - Warning: Seek medical help!`;
+            newAlertType = "danger";
+            alertMessage = "Critical! Heart rate dangerously abnormal.";
+        }
+    
+        // Update alert only if it changed
+        if (newAlertType !== window.lastAlertType) {
+            let alertItem = document.createElement("li");
+            alertItem.classList.add("alert-item", `alert-${newAlertType}`);
+            alertItem.textContent = alertMessage;
+    
+            // Clear old alerts and add the new one
+            let alertList = alertsContainer.querySelector("ul");
+            alertList.innerHTML = ""; // Remove previous alerts
+            alertList.appendChild(alertItem);
+    
+            window.lastAlertType = newAlertType; // Update last alert type
+        }
+    }
+    
+  }
+// Fetch readings every 5 seconds
+setInterval(fetchReadings, 5000);
+
+// Refresh readings every 5 seconds
+setInterval(fetchReadings, 5000);
+fetchReadings();
+
+  
+
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        fetchSensorData();
+      
+    } else {
+        alert("You are not logged in. Redirecting to login page.");
+        window.location.href = "Sign in.html";
+    }
+});
+  
+</script>
+
+<!-- PDF Generation Script -->
+<!-- PDF Generation Script -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script>
+    document.getElementById("downloadReport").addEventListener("click", function () {
+        if (!window.jspdf) {
+            console.error("jsPDF not found! Ensure it's loaded.");
+            return;
+        }
+    
+        const { jsPDF } = window.jspdf;
+        const pdf = new jsPDF();
+    
+        // Title
+        pdf.setFont("helvetica", "bold");
+        pdf.setFontSize(18);
+        pdf.text("Health Monitoring Report", 60, 15);
+    
+        // Fetch user profile details
+        const firstNameElem = document.getElementById("firstName");
+        const lastNameElem = document.getElementById("lastName");
+        const emailElem = document.getElementById("email");
+    
+        const firstName = firstNameElem ? firstNameElem.textContent : "No First Name";
+        const lastName = lastNameElem ? lastNameElem.textContent : "No Last Name";
+        const email = emailElem ? emailElem.textContent : "No Email";
+        const patientName = `${firstName} ${lastName}`.trim();
+    
+        // Date & Time
+        const date = new Date().toLocaleDateString();
+        const time = new Date().toLocaleTimeString();
+    
+        // Patient Information
+        pdf.setFontSize(12);
+        pdf.setFont("helvetica", "normal");
+        pdf.text(`Patient Name: ${firstName} ${lastName}`.trim(), 10, 30);;
+        pdf.text(`Email: ${email}`, 10, 40);
+        pdf.text(`Date: ${date}`, 10, 50);
+        pdf.text(`Time: ${time}`, 10, 60);
+    
+        // Retrieve health data
+        const heartRateElem = document.getElementById("heartRate");
+        const objectTempElem = document.getElementById("objectTemp");
+        const ambientTempElem = document.getElementById("ambientTemp");
+    
+        const heartRate = heartRateElem ? heartRateElem.textContent : "-- bpm";
+        const objectTemperature = objectTempElem ? objectTempElem.textContent : "-- °C";
+        const ambientTemperature = ambientTempElem ? ambientTempElem.textContent : "-- °C";
+    
+        // Draw table headers
+        pdf.setFont("helvetica", "bold");
+        pdf.text("Health Metrics", 10, 75);
+        pdf.line(10, 77, 200, 77); // Line separator
+    
+        // Health metrics table
+        pdf.setFont("helvetica", "normal");
+        pdf.text("Heart Rate: ", 10, 85);
+        pdf.text(heartRate, 80, 85);
+        
+
+    
+        pdf.text("Object Temperature: ", 10, 105);
+        pdf.text(objectTemperature, 80, 105);
+    
+        pdf.text("Ambient Temperature: ", 10, 115);
+        pdf.text(ambientTemperature, 80, 115);
+    
+        // Alerts section
+        pdf.setFont("helvetica", "bold");
+        pdf.text("Recent Alerts", 10, 130);
+        pdf.line(10, 132, 200, 132); // Line separator
+    
+        pdf.setFont("helvetica", "normal");
+        const alerts = document.querySelectorAll(".alert-item");
+        let alertYPosition = 140;
+    
+        if (alerts.length > 0) {
+            alerts.forEach((alert, index) => {
+                pdf.text(`${index + 1}. ${alert.textContent}`, 10, alertYPosition);
+                alertYPosition += 10;
+            });
+        } else {
+            pdf.text("No recent alerts.", 10, 140);
+        }
+    
+        // Debugging: Log before saving
+        console.log("Saving PDF...");
+    
+        // ✅ Delay to ensure PDF generates before triggering download
+        setTimeout(() => {
+            pdf.save(`${patientName || "Health_Report"}.pdf`);
+            console.log("PDF download triggered!");
+        }, 500); // 0.5-second delay for stability
+    });
+    
+</script>
+
+
+</body>
+</html>

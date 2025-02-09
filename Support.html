@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Support | Remote Health Monitoring</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<!-- Top Navigation -->
+<div class="top-nav">
+  <a href="#" class="logo">My Health Monitor</a>
+  <ul>
+    <div class="nav-links">
+      <li><a href="dashboard.html">Dashboard</a></li>
+    
+      <li><a href="support.html">Support</a></li>
+      <li><a href="logout.html">Logout</a></li>
+     
+      </div>
+    </div>
+  </ul>
+</div>
+
+<header class="support-header">
+  <h1>Support</h1>
+  <p>How can we assist you today?</p>
+</header>
+
+<main class="support-container">
+  <!-- Readings Information Section -->
+  <section class="readings-info">
+    <h2>Understanding Your Readings</h2>
+
+    <!-- Heartbeat Reading -->
+    <!-- Enhanced Reading Section -->
+<section class="reading-section">
+  <div class="reading-card">
+    <h3>Heart Beat Reading(BPM)</h3>
+    <p class="reading-description">Understanding your heart rate is crucial for monitoring your cardiovascular health. Here's what your readings mean:</p>
+    <div class="reading-info">
+      <ul>
+        <li><span class="status green">Green (Normal):</span> 60–100 BPM - Healthy, keep up with your routine!</li>
+        <li><span class="status yellow">Yellow (Caution):</span> 50–59 BPM or 101–110 BPM - Monitor closely, consider consulting a doctor if persistent.</li>
+        <li><span class="status red">Red (Warning):</span> &lt;50 BPM or &gt;110 BPM - Immediate medical attention recommended.</li>
+      </ul>
+    </div>
+    <div class="action-suggestion">
+      <p><strong>Tip:</strong> Regular exercise, stress management, and hydration can help maintain a healthy heart rate.</p>
+    </div>
+  </div>
+
+  <div class="reading-card">
+    <h3>SpO2 Reading</h3>
+    <p class="reading-description">Your blood oxygen level indicates how well oxygen is distributed throughout your body. Pay attention to these levels:</p>
+    <div class="reading-info">
+      <p><strong><span class="status green">Healthy Range:</span></strong> 95–100% healthy condition </p>
+      <p><strong><span class="status yellow">Hypoxemia:</span></strong> Levels below 80–85% can lead to cognitive and visual impairments.</p>
+      <p><strong><span class="status red">Severe Risk:</span></strong> At 67%, the risk of cyanosis increases, causing blue discoloration of nails, skin, and mucous membranes.</p>
+      <p class="emergency">If you experience breathing difficulties, confusion, or blue-tinted skin, <strong>seek medical attention immediately</strong>.</p>
+    </div>
+    <div class="action-suggestion">
+      <p><strong>Tip:</strong> Practice breathing exercises, avoid smoking, and ensure adequate air quality to maintain optimal oxygen levels.</p>
+    </div>
+  </div>
+</section>
+
+<!-- CSS Enhancements -->
+<style>
+  .reading-section {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    padding: 20px;
+  }
+
+  .reading-card {
+    background: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    padding: 20px;
+    transition: transform 0.3s ease-in-out;
+  }
+
+  .reading-card:hover {
+    transform: scale(1.05);
+    background-color: rgb(0, 195, 255);
+  }
+
+  .reading-description {
+    font-size: 14px;
+    color: #555;
+    margin-bottom: 10px;
+  }
+
+  .reading-info ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .reading-info li {
+    margin: 8px 0;
+    font-weight: bold;
+  }
+
+  .status {
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 14px;
+  }
+
+  .green {
+    color: #fff;
+    background-color: #28a745;
+  }
+
+  .yellow {
+    color: #fff;
+    background-color: #ffc107;
+  }
+
+  .red {
+    color: #fff;
+    background-color: #dc3545;
+  }
+
+  .action-suggestion {
+    margin-top: 15px;
+    padding: 10px;
+    background: #e9f7ef;
+    border-left: 4px solid #28a745;
+  }
+
+  .emergency {
+    color: #dc3545;
+    font-weight: bold;
+    background: #f8d7da;
+    padding: 10px;
+    border-left: 4px solid #dc3545;
+  }
+</style>
+
+
+  
+  
+
+  <!-- Contact Support Form -->
+  <section class="support-contact">
+    <h2>Contact Support</h2>
+    <form id="support-form">
+      <label for="name">Full Name:</label>
+      <input type="text" id="name" name="name" required>
+
+      <label for="email">Email Address:</label>
+      <input type="email" id="email" name="email" required>
+
+      <label for="message">Your Message:</label>
+      <textarea id="message" name="message" rows="5" required></textarea>
+
+      <button type="submit">Submit</button>
+    </form>
+  </section>
+
+  <!-- Live Chat Placeholder -->
+  <section class="support-live-chat">
+    <h2>Live Chat</h2>
+    <p>Coming soon: Instant support through live chat.</p>
+  </section>
+</main>
+
+<!-- Footer Section -->
+<footer class="footer">
+  <p>&copy; 2025 Health Monitor All Rights Reserved.</p>
+  <a href="#">Privacy Policy</a>
+</footer>
+
+
+  <script>
+    document.getElementById('support-form').addEventListener('submit', function(event) {
+  const name = document.getElementById('name').value;
+  const email = document.getElementById('email').value;
+  const message = document.getElementById('message').value;
+
+  if (!name || !email || !message) {
+    event.preventDefault(); // Prevent form submission
+    alert('Please fill in all fields.');
+  } else {
+    // Optional: additional validation for email format
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/;
+    if (!emailPattern.test(email)) {
+      event.preventDefault();
+      alert('Please enter a valid email address.');
+    }
+  }
+});
+
+document.querySelector('.support-live-chat h2').addEventListener('click', () => {
+  alert('Live chat feature is coming soon!');
+});
+  </script>
+</body>
+</html>
+

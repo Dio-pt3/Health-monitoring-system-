@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Logout | Remote Health Monitoring System</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <h1> You have been logged out </h1>
+    <a href="Sign in.html">Go to Login</a>
+    <script>
+// Logout Functionality
+document.getElementById('logoutLink').addEventListener('click', (event) => {
+    event.preventDefault ();
+    const confirmLogout = confirm("Are you sure you want to log out?");
+    if (confirmLogout) {
+        localStorage.removeItem('userProfile');
+        sessionStorage.clear();
+        window.location.href = "Sign in.html"; // Redirect to login page
+    }
+});
+    </script>
+</body>
+</html>
+
